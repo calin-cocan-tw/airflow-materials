@@ -1,0 +1,126 @@
+ docker logs -f 1ebef43a858f
+
+ docker logs --tail 50 --follow --timestamps
+
+ docker run \
+    --network airflow-section-5_default \
+    --expose 8793 \
+    -v /Users/calincocan/work/Learning/airflow/airflow-materials/airflow-section-5/mnt/airflow/dags:/usr/local/airflow/dags \
+    -v /Users/calincocan/work/Learning/airflow/airflow-materials/airflow-section-5/mnt/airflow/airflow.cfg:/usr/local/airflow/airflow.cfg \
+    -dt python:3.7
+
+docker exec -it e7758e32a976 /bin/bash
+
+## inside docker 
+export AIRFLOW_HOME=/usr/local/airflow/
+useradd -ms /bin/bash -d $AIRFLOW_HOME airflow
+
+pip install "apache-airflow[celery, crypto, postgres, redis]==1.10.6"
+#update aiflow.cfg to point to the correct postgress and redis instance
+
+aiflow db init
+
+
+
+docker-compose -f docker-compose-CeleryExecutor.yml scale worker=3
+
+
+#### Kube deployment
+
+helm repo add apache-airflow https://airflow.apache.org
+helm repo update
+
+kubectl create ns airflow  
+
+helm install airflow apache-airflow/airflow --namespace airflow --debug
+
+kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow
+
+helm show values apache-airflow/airflow >values.yaml
+
+helm ls -n airflow
+
+helm upgrade airflow apache-airflow/airflow -f ./values.yaml --debug
+
+helm upgrade --install airflow apache-airflow/airflow -f ./values.yaml --debug
+
+
+kubectl create secret generic airflow-ssh-secret --from-file=udemy-airflow-repo -n airflow 
+
+
+Rancher in EC2
+
+docker run -d --restart=unless-stopped --name rancher --hostname rancher -p 80:80 -p 443:443 rancher/rancher:v2.3.2
+
+
+docker ps -a
+
+# section 8
+
+https://github.com/apache/airflow/blob/v1-10-stable/airflow/config_templates/airflow_local_settings.py
+
+
+curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-8.17.3-linux-arm64.tar.gz
+
+vim ./filebeat.yml
+
+[inputs]
+type: log
+paths:
+    - /usr/local/airflow/logs/*/*/*/*.log
+
+output.logstash:
+  # The Logstash hosts
+  hosts: ["logstash:5044"]
+
+#output.elasticsearch:
+  # Array of hosts to connect to.
+  #hosts: ["localhost:9200"]
+
+
+
+TIG
+
+ docker-compose -f ./docker-compose-CeleryExecutorTIG.yml restart grafana
+
+
+
+https://airflow.apache.org/docs/apache-airflow/1.10.13/metrics.html
+ https://github.com/teamclairvoyant/airflow-maintenance-dags
+
+
+
+
+docker-compose -f ./docker-compose-CeleryExecutor.yml restart webserver
+
+
+fernet key:
+
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+
+airflow rotate_fernet_key
+
+
+#generate user
+
+import airflow
+from airflow import models, settings
+from airflow.contrib.auth.backends.password_auth import PasswordUser
+user = PasswordUser(models.User())
+user.username = 'admin'
+user.email = 'admin@airflow.com'
+user.password = 'admin'
+session = settings.Session()
+session.add(user)
+session.commit()
+session.close()
+exit()
+
+airflow create_user -r Admin --username admin --password admin --email admin@airflow.com --firstname calin --lastname cocan
+
+
+airflow list_users
+
+KEDA Queues
+
+https://marclamberti.com/blog-list/

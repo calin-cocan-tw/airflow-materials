@@ -52,6 +52,7 @@ RUN set -ex \
         vim \
         rsync \
         netcat \
+        python3-psycopg2 \
         locales \
     && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
     && locale-gen \
