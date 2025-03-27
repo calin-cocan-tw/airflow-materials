@@ -1,0 +1,15 @@
+https://query1.finance.yahoo.com/v8/finance/chart/nvda?metrics=high&interval=1d&range=1y
+https://github.com/astronomer/astro-sdk
+
+astro dev init
+astro dev start
+astro dev stop
+
+astro dev restart
+
+astro dev run tasks test stock_market is_api_available 2025-01-01
+astro dev run dags test stock_market 2025-01-01
+
+
+docker network ls
+docker network inspect 2ce362301c17

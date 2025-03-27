@@ -1,0 +1,10 @@
+airflow dags backfill -s <start> -e <end> dag_id
+AIRFLOW_HOME=./
+
+airflow db migrate
+
+astro dev run variables set my_number_2 84
+
+astro dev run variables set api "https://thecocktaildb.com/api/json/v1/1/random.php"
+
+astro dev run variables get api
